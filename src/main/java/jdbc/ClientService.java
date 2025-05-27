@@ -17,6 +17,7 @@ public class ClientService {
     }
 
     public long create(String name) {
+        validate(name);
         try (Connection connection = database.getConnection();
              PreparedStatement statement = connection.prepareStatement(INSERT_CLIENT_SQL, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -40,14 +41,23 @@ public class ClientService {
         }
     }
 
+    public void validate(String name) {
+        if (name == null || name.length() < 3 || name.length() > 1000) {
+            throw new IllegalArgumentException("Invalid name");
+        }
+    }
+
     public String getById(long id) {
         try (Connection connection = database.getConnection();
              PreparedStatement statement = connection.prepareStatement(GET_CLIENT_SQL)) {
 
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) return resultSet.getString("name");
-            else throw new RuntimeException("Cannot find client with id " + id);
+            if (resultSet.next()) {
+                return resultSet.getString("name");
+            } else {
+                throw new RuntimeException("Cannot find client with id " + id);
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
