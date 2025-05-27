@@ -22,9 +22,9 @@ public class ClientService {
              PreparedStatement statement = connection.prepareStatement(INSERT_CLIENT_SQL, Statement.RETURN_GENERATED_KEYS)) {
 
             statement.setString(1, name);
-            int affectedRows = statement.executeUpdate();
+            int result = statement.executeUpdate();
 
-            if (affectedRows == 0) {
+            if (result == 0) {
                 throw new SQLException("Creating client failed, no rows affected.");
             }
 
@@ -52,16 +52,31 @@ public class ClientService {
              PreparedStatement statement = connection.prepareStatement(GET_CLIENT_SQL)) {
 
             statement.setLong(1, id);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getString("name");
-            } else {
-                throw new RuntimeException("Cannot find client with id " + id);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getString("name");
+                } else {
+                    throw new RuntimeException("Cannot find client with id " + id);
+                }
             }
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+    public void setName(long id, String name){
+        validate(name);
+        try (Connection connection = database.getConnection();
+             PreparedStatement statement = connection.prepareStatement(UPDATE_CLIENT_SQL)) {
+            statement.setString(1, name);
+            statement.setLong(2, id);
+            int result =  statement.executeUpdate();
+            if (result == 0) {
+                throw new RuntimeException("Client with id " + id + " not found. Update failed.");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while updating client name");
+        }
+    }
+
 
 }
