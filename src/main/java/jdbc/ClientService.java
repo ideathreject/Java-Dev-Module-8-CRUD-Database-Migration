@@ -10,6 +10,7 @@ public class ClientService {
     private static final String INSERT_CLIENT_SQL = "INSERT INTO client (name) VALUES (?)";
     private static final String GET_CLIENT_SQL = "SELECT name FROM client WHERE id = ?";
     private static final String UPDATE_CLIENT_SQL = "UPDATE client SET name = ? WHERE id = ?";
+    private static final String DELETE_CLIENT_SQL = "DELETE FROM client WHERE id = ?";
     private final Database database;
 
     public ClientService(Database database) {
@@ -63,18 +64,34 @@ public class ClientService {
             throw new RuntimeException(e);
         }
     }
-    public void setName(long id, String name){
+
+    public void setName(long id, String name) {
         validate(name);
         try (Connection connection = database.getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_CLIENT_SQL)) {
             statement.setString(1, name);
             statement.setLong(2, id);
-            int result =  statement.executeUpdate();
+            int result = statement.executeUpdate();
             if (result == 0) {
                 throw new RuntimeException("Client with id " + id + " not found. Update failed.");
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error while updating client name");
+        }
+    }
+
+    public void deleteById(long id) {
+        try (Connection connection = database.getConnection();
+             PreparedStatement statement = connection.prepareStatement(DELETE_CLIENT_SQL)) {
+            statement.setLong(1, id);
+            int result = statement.executeUpdate();
+            if (result == 0) {
+                throw new RuntimeException("Client with id " + id + " not found. Delete failed.");
+            } else System.out.println("Client with id " + id + " DELETED");
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while deleting client", e);
         }
     }
 
