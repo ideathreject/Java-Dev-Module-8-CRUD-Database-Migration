@@ -1,4 +1,9 @@
-package jdbc;
+package jdbc.dao;
+
+import jdbc.model.Client;
+import jdbc.util.Database;
+import static jdbc.util.ValidateUtil.validateId;
+import static jdbc.util.ValidateUtil.validateName;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,21 +13,17 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientService {
+public class ClientServiceImpl implements ClientService {
     private static final String INSERT_CLIENT_SQL = "INSERT INTO client (name) VALUES (?)";
     private static final String GET_CLIENT_SQL = "SELECT name FROM client WHERE id = ?";
     private static final String UPDATE_CLIENT_SQL = "UPDATE client SET name = ? WHERE id = ?";
     private static final String DELETE_CLIENT_SQL = "DELETE FROM client WHERE id = ?";
     private static final String GET_ALL_CLIENTS_SQL = "SELECT * FROM client";
-    private final Database database;
 
-    public ClientService(Database database) {
-        this.database = database;
-    }
-
-    public long create(String name) {
+    @Override
+    public long create(String name)  {
         validateName(name);
-        try (Connection connection = database.getConnection();
+        try (Connection connection = Database.getConnection();
              PreparedStatement statement = connection.prepareStatement(INSERT_CLIENT_SQL, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, name);
             int result = statement.executeUpdate();
@@ -40,21 +41,10 @@ public class ClientService {
         }
     }
 
-    public void validateName(String name) {
-        if (name == null || name.length() < 3 || name.length() > 1000) {
-            throw new IllegalArgumentException("Invalid name");
-        }
-    }
-
-    public void validateId(long id) {
-        if (id <= 0) {
-            throw new IllegalArgumentException("Invalid ID");
-        }
-    }
-
+    @Override
     public String getById(long id) {
         validateId(id);
-        try (Connection connection = database.getConnection();
+        try (Connection connection = Database.getConnection();
              PreparedStatement statement = connection.prepareStatement(GET_CLIENT_SQL)) {
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
@@ -68,9 +58,10 @@ public class ClientService {
         }
     }
 
+    @Override
     public void setName(long id, String name) {
         validateName(name);
-        try (Connection connection = database.getConnection();
+        try (Connection connection = Database.getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_CLIENT_SQL)) {
             statement.setString(1, name);
             statement.setLong(2, id);
@@ -83,10 +74,10 @@ public class ClientService {
         }
     }
 
+    @Override
     public void deleteById(long id) {
         validateId(id);
-
-        try (Connection connection = database.getConnection();
+        try (Connection connection = Database.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_CLIENT_SQL)) {
             statement.setLong(1, id);
             int result = statement.executeUpdate();
@@ -98,10 +89,11 @@ public class ClientService {
         }
     }
 
-    public List<Client> listAll() {
+    @Override
+    public List<Client> listAll()  {
         List<Client> result = new ArrayList<>();
 
-        try (Connection connection = database.getConnection();
+        try (Connection connection = Database.getConnection();
              PreparedStatement statement = connection.prepareStatement(GET_ALL_CLIENTS_SQL)) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {

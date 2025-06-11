@@ -1,4 +1,4 @@
-package jdbc;
+package jdbc.util;
 import org.flywaydb.core.Flyway;
 
 public class MigrationService {

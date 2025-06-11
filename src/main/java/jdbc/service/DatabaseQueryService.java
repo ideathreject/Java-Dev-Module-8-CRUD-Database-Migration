@@ -1,4 +1,11 @@
-package jdbc;
+package jdbc.service;
+
+import jdbc.model.LongestProjects;
+import jdbc.model.MaxProjectCountClient;
+import jdbc.model.ProjectPrice;
+import jdbc.model.WorkerWithMaxSalary;
+import jdbc.model.YoungestEldestWorker;
+import jdbc.util.Database;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,14 +21,14 @@ import java.util.List;
 public class DatabaseQueryService {
     public static final String ERROR_MASSAGE = "Query execution error: ";
 
-    public List<WorkerWithMaxSalary> workerWithMaxSalaries(Connection conn) {
+    public List<WorkerWithMaxSalary> workerWithMaxSalaries() {
         List<WorkerWithMaxSalary> result = new ArrayList<>();
 
         try {
             String sql = Files.readString(Path.of("sql/find_max_salary_worker.sql"));
-            try (
-                    Statement stmt = conn.createStatement();
-                    ResultSet resultSet = stmt.executeQuery(sql)) {
+            try (Connection conn = Database.getConnection();
+                 Statement stmt = conn.createStatement();
+                 ResultSet resultSet = stmt.executeQuery(sql)) {
 
                 while (resultSet.next()) {
                     WorkerWithMaxSalary worker = new WorkerWithMaxSalary();
@@ -41,15 +48,15 @@ public class DatabaseQueryService {
     }
 
 
-    public List<LongestProjects> longestProjects(Connection conn) {
+    public List<LongestProjects> longestProjects() {
         List<LongestProjects> result = new ArrayList<>();
 
         try {
             String sql = Files.readString(Path.of("sql/find_longest_project.sql"));
 
-            try (
-                    Statement stmt = conn.createStatement();
-                    ResultSet resultSet = stmt.executeQuery(sql)
+            try (Connection conn = Database.getConnection();
+                 Statement stmt = conn.createStatement();
+                 ResultSet resultSet = stmt.executeQuery(sql)
             ) {
                 while (resultSet.next()) {
                     LongestProjects longestProjects = new LongestProjects();
@@ -69,15 +76,15 @@ public class DatabaseQueryService {
     }
 
 
-    public List<MaxProjectCountClient> maxProjectCountClients(Connection conn) {
+    public List<MaxProjectCountClient> maxProjectCountClients() {
         List<MaxProjectCountClient> result = new ArrayList<>();
 
         try {
             String sql = Files.readString(Path.of("sql/find_max_projects_client.sql"));
 
-            try (
-                    Statement stmt = conn.createStatement();
-                    ResultSet resultSet = stmt.executeQuery(sql)
+            try (Connection conn = Database.getConnection();
+                 Statement stmt = conn.createStatement();
+                 ResultSet resultSet = stmt.executeQuery(sql)
             ) {
                 while (resultSet.next()) {
                     MaxProjectCountClient maxProjectCountClient = new MaxProjectCountClient();
@@ -95,15 +102,15 @@ public class DatabaseQueryService {
     }
 
 
-    public List<YoungestEldestWorker> youngestEldestWorkers(Connection conn) {
+    public List<YoungestEldestWorker> youngestEldestWorkers() {
         List<YoungestEldestWorker> result = new ArrayList<>();
 
         try {
             String sql = Files.readString(Path.of("sql/find_youngest_eldest_workers.sql"));
 
-            try (
-                    Statement stmt = conn.createStatement();
-                    ResultSet resultSet = stmt.executeQuery(sql)
+            try (Connection conn = Database.getConnection();
+                 Statement stmt = conn.createStatement();
+                 ResultSet resultSet = stmt.executeQuery(sql)
             ) {
                 while (resultSet.next()) {
                     YoungestEldestWorker youngestEldestWorker = new YoungestEldestWorker();
@@ -121,15 +128,15 @@ public class DatabaseQueryService {
     }
 
 
-    public List<ProjectPrice> projectPrices(Connection conn) {
+    public List<ProjectPrice> projectPrices() {
         List<ProjectPrice> result = new ArrayList<>();
 
         try {
             String sql = Files.readString(Path.of("sql/print_project_prices.sql"));
 
-            try (
-                    Statement stmt = conn.createStatement();
-                    ResultSet resultSet = stmt.executeQuery(sql);
+            try (Connection conn = Database.getConnection();
+                 Statement stmt = conn.createStatement();
+                 ResultSet resultSet = stmt.executeQuery(sql);
             ) {
                 while (resultSet.next()) {
                     ProjectPrice projectPrice = new ProjectPrice();
