@@ -3,7 +3,7 @@ package jdbc.dao;
 import jdbc.model.Client;
 import java.util.List;
 
-public interface ClientService {
+public interface ClientDaoService {
 
     long create(String name);
 

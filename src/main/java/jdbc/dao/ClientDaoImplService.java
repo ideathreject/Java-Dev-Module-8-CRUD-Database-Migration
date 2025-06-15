@@ -2,8 +2,6 @@ package jdbc.dao;
 
 import jdbc.model.Client;
 import jdbc.util.Database;
-import static jdbc.util.ValidateUtil.validateId;
-import static jdbc.util.ValidateUtil.validateName;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientServiceImpl implements ClientService {
+public class ClientDaoImplService implements ClientDaoService {
     private static final String INSERT_CLIENT_SQL = "INSERT INTO client (name) VALUES (?)";
     private static final String GET_CLIENT_SQL = "SELECT name FROM client WHERE id = ?";
     private static final String UPDATE_CLIENT_SQL = "UPDATE client SET name = ? WHERE id = ?";
@@ -22,7 +20,6 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public long create(String name)  {
-        validateName(name);
         try (Connection connection = Database.getConnection();
              PreparedStatement statement = connection.prepareStatement(INSERT_CLIENT_SQL, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, name);
@@ -43,7 +40,6 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public String getById(long id) {
-        validateId(id);
         try (Connection connection = Database.getConnection();
              PreparedStatement statement = connection.prepareStatement(GET_CLIENT_SQL)) {
             statement.setLong(1, id);
@@ -60,7 +56,6 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public void setName(long id, String name) {
-        validateName(name);
         try (Connection connection = Database.getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_CLIENT_SQL)) {
             statement.setString(1, name);
@@ -76,7 +71,6 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public void deleteById(long id) {
-        validateId(id);
         try (Connection connection = Database.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_CLIENT_SQL)) {
             statement.setLong(1, id);
